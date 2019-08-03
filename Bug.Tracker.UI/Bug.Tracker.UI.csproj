@@ -5,4 +5,9 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Bug.Tracker.BugCreator\Bug.Tracker.BugCreator.csproj" />
+    <ProjectReference Include="..\Bug.Tracker.BugReader\Bug.Tracker.BugReader.csproj" />
+  </ItemGroup>
+
 </Project>

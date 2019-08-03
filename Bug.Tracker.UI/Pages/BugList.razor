@@ -1,0 +1,43 @@
+@page "/bug-list"
+@using Bug.Tracker.UI.Data
+@using Bug.Tracker.BugReader
+@using Bug.Tracker.Models
+@using Bug.Tracker.Models.Enums
+@inject IBugReader BugReaderInstance
+
+<h2>Open bugs</h2>
+@if (bugItems != null && bugItems.Any())
+{
+<table class="table">
+		<thead>
+			<tr>
+				<th>Bug Title</th>
+				<th>Bug Description</th>
+				<th>Assigned to</th>
+				<th>Status</th>
+				<th>Created</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var bugItem in bugItems)
+{
+<tr>
+					<td>@bugItem.Title</td>
+					<td>@bugItem.Description</td>
+					<td>@bugItem.AssignedTo</td>
+					<td>@bugItem.Status</td>
+					<td>@bugItem.DateCreated</td>
+				</tr>
+}
+		</tbody>
+	</table>
+}
+
+@code {
+
+	IEnumerable<BugItem> bugItems;
+	protected override async Task OnInitAsync()
+	{
+		bugItems = BugReaderInstance.GetBugItems(BugStatus.open);
+	}
+}

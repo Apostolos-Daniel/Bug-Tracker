@@ -1,0 +1,111 @@
+@page "/bug-create"
+@using Bug.Tracker.UI.Data
+@using Bug.Tracker.BugCreator
+@using Bug.Tracker.Models
+@inject IBugCreator BugCreatorInstance
+
+<h1>Create a bug</h1>
+
+@if (_newBugItem != null)
+{
+	<div>
+		<label style="color:@BugCreationMessageColour">@BugCreationMessage</label>
+	</div>
+
+	<div>
+		<button onclick="@(() => Clear())">Create another bug</button>
+	</div>
+}
+else
+{
+	<p>Please give detail of the bug such as a descriptive title and an extensive description of the bug</p>
+
+	<div>
+		<label style="float:left; margin:5px;">Title</label>
+		<input class="w3-input w3-border w3-round" style="float:left; margin:5px;" type="text" name="title" @bind-value="@BugTitle" @bind-value:event="oninput" />
+	</div>
+
+	<div>
+		<label style="float:left; margin:5px;">Description</label>
+		<textarea class="w3-input w3-border w3-round" style="float:left; margin:5px;" name="description" @bind-value="@BugDescription" @bind-value:event="oninput" />
+	</div>
+	<br />
+	<div>
+		<button class="button button1" style="float:left; margin:20px;" onclick="@(() => CreateBug())">Create</button>
+	</div>
+}
+
+<br />
+<br />
+
+
+<BugList></BugList>
+
+@code {
+	string BugTitle { get; set; }
+	string BugDescription { get; set; }
+
+	string BugCreationMessage { get; set; }
+	string BugCreationMessageColour { get; set; }
+	BugItem _newBugItem = null;
+
+
+	protected override async Task OnInitAsync()
+	{
+		//BugTitle = "Please give a descriptive title";
+		//BugDescription = "Please give a useful description of the bug";
+		Clear();
+	}
+
+	public void Clear()
+	{
+
+		BugCreationMessage = string.Empty;
+		_newBugItem = null;
+	}
+
+	public void CreateBug()
+	{
+		_newBugItem = BugCreatorInstance.CreateBug(BugTitle, BugDescription);
+		if (_newBugItem == null)
+		{
+			BugCreationMessageColour = "red";
+			BugCreationMessage = "Failed to create bug item!";
+		}
+		else
+		{
+			BugCreationMessageColour = "green";
+			BugCreationMessage = $"Bug {_newBugItem.Id.ToString()} was created successfully";
+		}
+
+	}
+}
+
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+	.button {
+		background-color: #4CAF50; /* Green */
+		border: none;
+		color: white;
+		padding: 16px 32px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		margin: 4px 2px;
+		-webkit-transition-duration: 0.4s; /* Safari */
+		transition-duration: 0.4s;
+		cursor: pointer;
+	}
+
+	.button1 {
+		background-color: white;
+		color: black;
+		border: 2px solid #555555;
+	}
+
+	div {
+		resize: both;
+	}
+</style>

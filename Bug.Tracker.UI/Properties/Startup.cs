@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Bug.Tracker.UI.Data;
+using Bug.Tracker.BugCreator;
+using Bug.Tracker.BugReader;
 
 namespace Bug.Tracker.UI
 {
@@ -27,6 +29,8 @@ namespace Bug.Tracker.UI
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddScoped<IBugCreator, BugCreator.BugCreator>();
+            services.AddScoped<IBugReader, BugReader.BugReader>();
             services.AddSingleton<WeatherForecastService>();
         }
 
