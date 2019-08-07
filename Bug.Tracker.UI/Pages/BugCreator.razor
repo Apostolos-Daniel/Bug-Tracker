@@ -13,7 +13,7 @@
 	</div>
 
 	<div>
-		<button onclick="@(() => Clear())">Create another bug</button>
+		<button class="button button1" onclick="@(() => Clear())">Create another bug</button>
 	</div>
 }
 else
@@ -38,9 +38,6 @@ else
 <br />
 <br />
 
-
-<BugList></BugList>
-
 @code {
 	string BugTitle { get; set; }
 	string BugDescription { get; set; }
@@ -52,21 +49,26 @@ else
 
 	protected override async Task OnInitAsync()
 	{
-		//BugTitle = "Please give a descriptive title";
-		//BugDescription = "Please give a useful description of the bug";
 		Clear();
 	}
 
 	public void Clear()
 	{
-
 		BugCreationMessage = string.Empty;
 		_newBugItem = null;
 	}
 
-	public void CreateBug()
+	[Parameter] EventCallback OnBugCreated { get; set; }// the event call back when an authority is selected
+
+	// this is called when the select authority button is clicked by the user
+	void BugCreated()
 	{
-		_newBugItem = BugCreatorInstance.CreateBug(BugTitle, BugDescription);
+		OnBugCreated.InvokeAsync(null);// invoke the call back to the parent component
+	}
+
+	public async Task CreateBug()
+	{
+		_newBugItem = await BugCreatorInstance.CreateBug(BugTitle, BugDescription);
 		if (_newBugItem == null)
 		{
 			BugCreationMessageColour = "red";
@@ -76,36 +78,7 @@ else
 		{
 			BugCreationMessageColour = "green";
 			BugCreationMessage = $"Bug {_newBugItem.Id.ToString()} was created successfully";
+			BugCreated();
 		}
-
 	}
 }
-
-
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<style>
-	.button {
-		background-color: #4CAF50; /* Green */
-		border: none;
-		color: white;
-		padding: 16px 32px;
-		text-align: center;
-		text-decoration: none;
-		display: inline-block;
-		font-size: 16px;
-		margin: 4px 2px;
-		-webkit-transition-duration: 0.4s; /* Safari */
-		transition-duration: 0.4s;
-		cursor: pointer;
-	}
-
-	.button1 {
-		background-color: white;
-		color: black;
-		border: 2px solid #555555;
-	}
-
-	div {
-		resize: both;
-	}
-</style>

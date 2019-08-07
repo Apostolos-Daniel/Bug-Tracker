@@ -1,0 +1,80 @@
+@page "/user-list"
+@using Bug.Tracker.Models
+@using Bug.Tracker.UserReader
+@using Bug.Tracker.UserUpdater
+@inject IUserReader UserReaderInstance
+@inject IUserUpdater UserUpdaterInstance
+
+@if (editingUser)
+{
+	<div>
+		<label style="float:left; margin:5px;">Update user @selectedUserName: </label>
+		<input style="float:left; margin:5px;" name="name" @bind-value="@selectedUser.Name" @bind-value:event="oninput" />
+	</div>
+	<br />
+	<div>
+		<button class="button button1" style="float:left; margin:20px;" onclick="@(async () => await UpdateUser())">Update</button>
+	</div>
+}
+else
+{
+	<UserCreator OnUserCreated="@UserCreationChangeHandler"></UserCreator>
+	if (users != null && users.Any())
+	{
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var user in users)
+				{
+					<tr>
+						<td>@user.Name</td>
+						<td><button class="button button1" @onclick="@(() => EditUser(@user))">Edit</button></td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+}
+
+@code {
+bool editingUser = false;
+User selectedUser = null;
+string selectedUserName = null;
+Guid selectedUserId;
+IEnumerable<User> users;
+protected override async Task OnInitAsync()
+{
+	await UpdateUsers();
+}
+
+public void EditUser(User user)
+{
+	editingUser = true;
+	selectedUser = user;
+	selectedUserName = user.Name;
+	selectedUserId = user.Id;
+}
+
+public async Task UpdateUsers()
+{
+	users = await UserReaderInstance.GetUsers();
+}
+
+public async Task UpdateUser()
+{
+	await UserUpdaterInstance.UpdateUserName(selectedUserId, selectedUser.Name);
+	editingUser = false;
+	selectedUser = null;
+}
+
+// when the authority selection changes, this will be called to update profile
+async Task UserCreationChangeHandler()
+{
+	await UpdateUsers();
+}
+}

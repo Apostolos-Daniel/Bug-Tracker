@@ -11,6 +11,10 @@ using Microsoft.Extensions.Hosting;
 using Bug.Tracker.UI.Data;
 using Bug.Tracker.BugCreator;
 using Bug.Tracker.BugReader;
+using Bug.Tracker.BugUpdater;
+using Bug.Tracker.UserReader;
+using Bug.Tracker.CreateUser;
+using Bug.Tracker.UserUpdater;
 
 namespace Bug.Tracker.UI
 {
@@ -29,8 +33,17 @@ namespace Bug.Tracker.UI
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddHttpClient("bugTrackerClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:44342/api/");
+            });
+            //.AddTransient<IBugCreator, BugCreator.BugCreator>();
             services.AddScoped<IBugCreator, BugCreator.BugCreator>();
             services.AddScoped<IBugReader, BugReader.BugReader>();
+            services.AddScoped<IBugUpdater, BugUpdater.BugUpdater>();
+            services.AddScoped<IUserReader, UserReader.UserReader>();
+            services.AddScoped<IUserUpdater, UserUpdater.UserUpdater>();
+            services.AddScoped<IUserCreator, CreateUser.UserCreator>();
             services.AddSingleton<WeatherForecastService>();
         }
 

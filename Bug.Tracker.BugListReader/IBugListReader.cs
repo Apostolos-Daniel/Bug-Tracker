@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Bug.Tracker.Models;
+using Bug.Tracker.Models.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Bug.Tracker.BugListReader
 {
-    interface IBugListReader
+    public interface IBugListReader
     {
-        IEnumerable<IBugItem> GetBugs(BugStatus);
+        public IEnumerable<BugItem> GetBugs(BugStatus status);
     }
 }

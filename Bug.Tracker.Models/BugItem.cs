@@ -1,9 +1,10 @@
 ﻿using Bug.Tracker.Models.Enums;
 using System;
+using System.Collections.Generic;
 
 namespace Bug.Tracker.Models
 {
-    public class BugItem
+    public class BugItem// : RecordWithGuid
     {
         public BugItem()
         {
@@ -19,5 +20,7 @@ namespace Bug.Tracker.Models
         public DateTime DateCreated { get; set; }
         public string AssignedTo { get; set; }
         public BugStatus Status { get; set; }
+
+        public IEnumerable<string> Values => new List<string> { Title, Description, DateCreated.ToString(), AssignedTo, Status.ToString() };
     }
 }

@@ -1,28 +1,28 @@
 ﻿using Bug.Tracker.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Bug.Tracker.BugCreator
 {
     public class BugCreator : IBugCreator
     {
-        public BugCreator()
+        private readonly HttpClient _httpClient;
+
+        public BugCreator(IHttpClientFactory httpClientFactory)
         {
+            _httpClient = httpClientFactory.CreateClient("bugTrackerClient");
         }
 
-        public BugItem CreateBug(string title, string description)
+        public async Task<BugItem> CreateBug(string title, string description)
         {
             // create new bug
-            var newBugItem = new BugItem
-            {
-                Title = title,
-                Description = description
-            };
+            var bugItemCreated = await _httpClient.PostAsync($"https://localhost:44342/api/bugs/title/{title}/description/{description}", null);
 
-            // add it to the database and return
-
-            return newBugItem;
+            return JsonConvert.DeserializeObject<BugItem>(await bugItemCreated.Content.ReadAsStringAsync());
         }
     }
 }

@@ -1,0 +1,80 @@
+@page "/user-create"
+@using Bug.Tracker.UI.Data
+@using Bug.Tracker.CreateUser
+@using Bug.Tracker.Models
+@inject IUserCreator UserCreatorInstance
+
+<h1>Create a user</h1>
+
+@if (_newUser != null)
+{
+	<div>
+		<label style="color:@UserCreationMessageColour">@UserCreationMessage</label>
+	</div>
+
+	<div>
+		<button  class="button button1" onclick="@(() => Clear())">Create another user</button>
+	</div>
+}
+else
+{
+	<p>What's the user's name?</p>
+
+	<div>
+		<label style="float:left; margin:5px;">Name</label>
+		<input class="w3-input w3-border w3-round" style="float:left; margin:5px;" type="text" name="title" @bind-value="@UserName" @bind-value:event="oninput" />
+	</div>
+	<br />
+	<div>
+		<button class="button button1" style="float:left; margin:20px;" onclick="@(async () => await CreateUser())">Create</button>
+	</div>
+}
+
+<br />
+<br />
+
+@code {
+	string UserName { get; set; }
+
+	string UserCreationMessage { get; set; }
+	string UserCreationMessageColour { get; set; }
+	User _newUser = null;
+
+	protected override async Task OnInitAsync()
+	{
+		//BugTitle = "Please give a descriptive title";
+		//BugDescription = "Please give a useful description of the bug";
+		Clear();
+	}
+
+	public void Clear()
+	{
+		UserCreationMessage = string.Empty;
+		_newUser = null;
+	}
+
+	public async Task CreateUser()
+	{
+		_newUser = await UserCreatorInstance.CreateUser(UserName);
+		if (_newUser == null || string.IsNullOrEmpty(_newUser.Name))
+		{
+			UserCreationMessageColour = "red";
+			UserCreationMessage = "Failed to create new user!";
+		}
+		else
+		{
+			UserCreationMessageColour = "green";
+			UserCreationMessage = $"User {_newUser.Id.ToString()} was created successfully";
+			UserCreated();
+		}
+	}
+
+
+	[Parameter] EventCallback OnUserCreated { get; set; }// the event call back when an authority is selected
+
+	// this is called when the select authority button is clicked by the user
+	void UserCreated()
+	{
+		OnUserCreated.InvokeAsync(null);// invoke the call back to the parent component
+	}
+}

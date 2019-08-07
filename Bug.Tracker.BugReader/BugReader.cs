@@ -1,16 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Bug.Tracker.Models;
 using Bug.Tracker.Models.Enums;
+using Newtonsoft.Json;
 
 namespace Bug.Tracker.BugReader
 {
     public class BugReader : IBugReader
     {
-        public IEnumerable<BugItem> GetBugItems(BugStatus status)
+        private readonly HttpClient _httpClient;
+
+        public BugReader(IHttpClientFactory httpClientFactory)
         {
-            return new List<BugItem> { new BugItem { Title = "Bug 1", Description = "Bug 1 description" } };
+            _httpClient = httpClientFactory.CreateClient("bugTrackerClient");
+        }
+
+        public async Task<IEnumerable<BugItem>> GetBugItems(BugStatus status)
+        {
+            var bugItems = await _httpClient.GetAsync($"{_httpClient.BaseAddress}bugs");
+            return JsonConvert.DeserializeObject<IEnumerable<BugItem>>(await bugItems.Content.ReadAsStringAsync());
         }
     }
 }
