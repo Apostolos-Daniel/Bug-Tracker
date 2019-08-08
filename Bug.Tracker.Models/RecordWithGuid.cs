@@ -2,8 +2,8 @@
 
 namespace Bug.Tracker.Models
 {
-    public class RecordWithGuid
+    public interface IRecordWithGuid
     {
-        public virtual Guid Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

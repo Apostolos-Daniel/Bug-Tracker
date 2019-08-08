@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bug.Tracker.DocumentStore;
 using Bug.Tracker.Models;
+using Bug.Tracker.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bug.Tracker.API.Controllers
@@ -12,9 +13,9 @@ namespace Bug.Tracker.API.Controllers
     [ApiController]
     public class BugsController : ControllerBase
     {
-        private readonly BugTrackerStore _bugTrackerStore;
+        private readonly BugStore _bugTrackerStore;
 
-        public BugsController(BugTrackerStore bugTrackerStore)
+        public BugsController(BugStore bugTrackerStore)
         {
             _bugTrackerStore = bugTrackerStore;
         }
@@ -23,14 +24,15 @@ namespace Bug.Tracker.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BugItem>>> GetAsync()
         {
-            return Ok(await _bugTrackerStore.GetBugs());
+            var bugs = await _bugTrackerStore.GetAll<BugItem>();
+            return Ok(bugs);
         }
 
         // GET api/bugs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetAsync(Guid id)
         {
-            return Ok(await _bugTrackerStore.FindBug(id));
+            return Ok(await _bugTrackerStore.Find(id));
         }
 
         [HttpPost("title/{title}/description/{description}")]
@@ -38,7 +40,7 @@ namespace Bug.Tracker.API.Controllers
         {
             try
             {
-                return Ok(await _bugTrackerStore.AddBug(title, description));
+                return Ok(await _bugTrackerStore.AddItem(new BugItem { Title = title, Description = description }));
             }
             catch (Exception ex)
             {
@@ -51,7 +53,8 @@ namespace Bug.Tracker.API.Controllers
         {
             try
             {
-                return Ok(await _bugTrackerStore.UpdateBug(id, status));
+                await _bugTrackerStore.UpdateItem(new BugItem { Id = id, Status = Enum.Parse<BugStatus>(status) });
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -64,7 +67,8 @@ namespace Bug.Tracker.API.Controllers
         {
             try
             {
-                return Ok(await _bugTrackerStore.UpdateBug(id, status, userId));
+                await _bugTrackerStore.UpdateItem(new BugItem { Id = id, Status = Enum.Parse<BugStatus>(status), AssignedTo = userId });
+                return Ok();
             }
             catch (Exception ex)
             {

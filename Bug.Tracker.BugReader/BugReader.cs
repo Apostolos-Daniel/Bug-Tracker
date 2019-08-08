@@ -20,7 +20,7 @@ namespace Bug.Tracker.BugReader
 
         public async Task<IEnumerable<BugItem>> GetBugItems(BugStatus status)
         {
-            var bugItems = await _httpClient.GetAsync($"{_httpClient.BaseAddress}bugs");
+            var bugItems = await _httpClient.GetAsync($"bugs");
             return JsonConvert.DeserializeObject<IEnumerable<BugItem>>(await bugItems.Content.ReadAsStringAsync());
         }
     }

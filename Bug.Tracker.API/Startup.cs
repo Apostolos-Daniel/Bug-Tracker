@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bug.Tracker.DocumentStore;
+using Bug.Tracker.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,7 +28,9 @@ namespace Bug.Tracker.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<BugTrackerStore>();
+            services.AddScoped<BugStore>();
+            services.AddScoped<UserStore>();
+            services.AddScoped<BugTrackerStore<User>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

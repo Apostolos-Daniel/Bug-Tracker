@@ -4,4 +4,9 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="IDataRow.cs" />
+    <Compile Remove="IDataTable.cs" />
+  </ItemGroup>
+
 </Project>

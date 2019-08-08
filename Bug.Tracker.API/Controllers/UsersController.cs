@@ -13,9 +13,9 @@ namespace Bug.Tracker.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly BugTrackerStore _bugTrackerStore;
+        private readonly UserStore _bugTrackerStore;
 
-        public UsersController(BugTrackerStore bugTrackerStore)
+        public UsersController(UserStore bugTrackerStore)
         {
             _bugTrackerStore = bugTrackerStore;
         }
@@ -24,7 +24,7 @@ namespace Bug.Tracker.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetAsync()
         {
-            var users = await _bugTrackerStore.GetUsers();
+            var users = await _bugTrackerStore.GetAll<User>();
             return Ok(users);
         }
 
@@ -32,7 +32,7 @@ namespace Bug.Tracker.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetAsync(Guid id)
         {
-            return Ok(await _bugTrackerStore.FindUser(id));
+            return Ok(await _bugTrackerStore.Find(id));
         }
 
         [HttpPost("name/{name}")]
@@ -40,7 +40,7 @@ namespace Bug.Tracker.API.Controllers
         {
             try
             {
-                return Ok(await _bugTrackerStore.AddUser(name));
+                return Ok(await _bugTrackerStore.AddItem(new User { Name = name }));
             }
             catch (Exception ex)
             {
@@ -53,7 +53,8 @@ namespace Bug.Tracker.API.Controllers
         {
             try
             {
-                return Ok(await _bugTrackerStore.UpdateUser(id, name));
+                await _bugTrackerStore.UpdateItem(new User { Id = id, Name = name });
+                return Ok();
             }
             catch (Exception ex)
             {
